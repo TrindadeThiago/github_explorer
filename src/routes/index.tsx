@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Welcome from '../pages/Welcome';
+import Dashboard from '../pages/Dashboard';
 
 const Routes: React.FC = () => {
   return (
     <Switch>
-      <Route path="/" exact component={Welcome} />
+      <Route path="/" exact component={Dashboard} />
     </Switch>
   );
 };
