@@ -1,85 +1,65 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 
+import api from '../../services/api';
 import { Title, Form, Repositories } from './styles';
 import logo from '../../assets/logo.svg';
 
+interface Reposity {
+  full_name: string;
+  description: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+}
+
 const Dashboard: React.FC = () => {
+  const [newRepo, setNewRepo] = useState('');
+  const [repositories, setRepositories] = useState<Reposity[]>([]);
+
+  async function handleAddRepository(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+
+    const response = await api.get<Reposity>(`repos/${newRepo}`);
+
+    const repository = response.data;
+
+    setRepositories([...repositories, repository]);
+    setNewRepo('');
+  }
+
   return (
     <>
       <img src={logo} alt="" />
       <Title>Explore repositorios no Github</Title>
 
-      <Form>
-        <input placeholder="Digite o nome do repositorio" />
+      <Form onSubmit={handleAddRepository}>
+        <input
+          value={newRepo}
+          onChange={e => setNewRepo(e.target.value)}
+          placeholder="Digite o nome do repositorio"
+        />
         <button type="submit">Pesquisar</button>
       </Form>
 
       <Repositories>
-        <a href="/">
-          <img
-            src="https://avatars1.githubusercontent.com/u/45314027?s=460&u=a263f6ee3662fe86126781219724b49dd11c20fc&v=4"
-            alt="Thiago Trindade"
-          />
+        {repositories.map(repository => (
+          <a key={repository.full_name} href="/">
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
 
-          <div>
-            <strong>TrindadeThiago/trindadethiago.github.io</strong>
-            <p>Meu portifolio</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
-
-        <a href="/">
-          <img
-            src="https://avatars1.githubusercontent.com/u/45314027?s=460&u=a263f6ee3662fe86126781219724b49dd11c20fc&v=4"
-            alt="Thiago Trindade"
-          />
-
-          <div>
-            <strong>TrindadeThiago/trindadethiago.github.io</strong>
-            <p>Meu portifolio</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
-
-        <a href="/">
-          <img
-            src="https://avatars1.githubusercontent.com/u/45314027?s=460&u=a263f6ee3662fe86126781219724b49dd11c20fc&v=4"
-            alt="Thiago Trindade"
-          />
-
-          <div>
-            <strong>TrindadeThiago/trindadethiago.github.io</strong>
-            <p>Meu portifolio</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
-
-        <a href="/">
-          <img
-            src="https://avatars1.githubusercontent.com/u/45314027?s=460&u=a263f6ee3662fe86126781219724b49dd11c20fc&v=4"
-            alt="Thiago Trindade"
-          />
-
-          <div>
-            <strong>TrindadeThiago/trindadethiago.github.io</strong>
-            <p>Meu portifolio</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
-
-        <a href="/">
-          <img
-            src="https://avatars1.githubusercontent.com/u/45314027?s=460&u=a263f6ee3662fe86126781219724b49dd11c20fc&v=4"
-            alt="Thiago Trindade"
-          />
-
-          <div>
-            <strong>TrindadeThiago/trindadethiago.github.io</strong>
-            <p>Meu portifolio</p>
-          </div>
-          <FiChevronRight size={20} />
-        </a>
+            <div>
+              <strong>{repository.full_name}</strong>
+              <p>{repository.description}</p>
+            </div>
+            <FiChevronRight size={20} />
+          </a>
+        ))}
       </Repositories>
     </>
   );
